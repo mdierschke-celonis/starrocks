@@ -14,8 +14,11 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include "column/runtime_type_traits.h"
 #include "column/vectorized_fwd.h"
+#include "runtime_type_traits.h"
 
 namespace starrocks {
 
@@ -46,6 +49,16 @@ public:
     const RunTimeCppType<Type> value(const size_t idx) const { return _data[idx & _not_const_mask]; }
 
     const bool is_null(const size_t idx) const { return _null_data[idx & _null_mask]; }
+
+    /**
+     * Does not check for is_null(size_t), and relies on the same preconditions as value(size_t)
+     */
+    const bool is_nan(const size_t idx) const {
+        if constexpr (std::is_floating_point_v<RunTimeCppType<Type>>) {
+            return std::isnan(value(idx));
+        }
+        return false;
+    }
 
     size_t size() const { return _column->size(); }
 

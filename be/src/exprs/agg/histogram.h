@@ -189,7 +189,7 @@ private:
         ColumnViewer<LT> viewer(this->data(state).column);
         for (size_t i = 0; i < viewer.size(); ++i) {
             auto v = viewer.value(i);
-            if (viewer.is_null(i)) {
+            if (viewer.is_null(i) || viewer.is_nan(i)) {
                 continue;
             }
             if (buckets.empty()) {
